@@ -131,3 +131,53 @@ GROUP BY
     p.productCode
 ORDER BY productPerformance DESC
 LIMIT 10;
+
+-- CTE for Prev. 2 Queries
+
+WITH
+    lowStock AS (
+        SELECT p.productCode, p.productName, (
+                ROUND(
+                    CAST(
+                        (
+                            SELECT SUM(quantityOrdered)
+                            FROM orderdetails o
+                            WHERE
+                                o.productCode = p.productCode
+                        ) AS REAL
+                    ) / quantityInStock, 2
+                )
+            ) AS lowStock
+        FROM products p
+        GROUP BY
+            p.productCode
+        ORDER BY lowStock DESC
+        LIMIT 10
+    ),
+    productPerformance AS (
+        SELECT p.productCode, (
+                SELECT SUM(
+                        o.quantityOrdered * o.priceEach
+                    )
+                FROM orderdetails o
+                WHERE
+                    o.productCode = p.productCode
+                GROUP BY
+                    o.productCode
+            ) AS productPerformance
+        FROM products p
+        GROUP BY
+            p.productCode
+        ORDER BY productPerformance DESC
+        LIMIT 10
+    )
+SELECT p.*, l.lowStock, pp.productPerformance
+FROM products p
+LEFT JOIN lowStock l ON p.productCode = l.productCode
+LEFT JOIN productPerformance pp ON p.productCode = pp.productCode
+WHERE
+    p.productCode IN (
+        SELECT productCode FROM lowStock
+        UNION
+        SELECT productCode FROM productPerformance
+    )
