@@ -96,18 +96,38 @@ FROM offices;
 
 -- Low Stock Products
 
-SELECT productCode, productName, (
+SELECT p.productCode, p.productName, (
         ROUND(
             CAST(
                 (
                     SELECT SUM(quantityOrdered)
                     FROM orderdetails o
                     WHERE
-                        o.productCode = productCode
+                        o.productCode = p.productCode
                 ) AS REAL
             ) / quantityInStock, 2
         )
     ) AS lowStock
-FROM products
+FROM products p
+GROUP BY
+    p.productCode
 ORDER BY lowStock DESC
+LIMIT 10;
+
+-- Product Performance
+
+SELECT p.productCode, (
+        SELECT SUM(
+                o.quantityOrdered * o.priceEach
+            )
+        FROM orderdetails o
+        WHERE
+            o.productCode = p.productCode
+        GROUP BY
+            o.productCode
+    ) AS productPerformance
+FROM products p
+GROUP BY
+    p.productCode
+ORDER BY productPerformance DESC
 LIMIT 10;
