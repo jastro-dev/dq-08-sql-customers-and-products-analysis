@@ -91,4 +91,22 @@ SELECT
         FROM PRAGMA_TABLE_INFO ('offices')
     ) AS number_of_attributes,
     COUNT(*) AS number_of_rows
-FROM offices
+FROM offices;
+
+-- Low Stock Products
+
+SELECT p.productCode, p.productName, (
+        ROUND(
+            CAST(
+                (
+                    SELECT SUM(quantityOrdered)
+                    FROM orderdetails o
+                    WHERE
+                        o.productCode = p.productCode
+                ) AS REAL
+            ) / p.quantityInStock, 2
+        )
+    ) AS lowStock
+FROM products p
+ORDER BY lowStock DESC
+LIMIT 10;
