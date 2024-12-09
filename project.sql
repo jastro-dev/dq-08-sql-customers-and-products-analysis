@@ -1,3 +1,4 @@
+-- Active: 1733722630182@@127.0.0.1@3306
 /*
 stores.db
 Customers: customer data
@@ -95,18 +96,18 @@ FROM offices;
 
 -- Low Stock Products
 
-SELECT p.productCode, p.productName, (
+SELECT productCode, productName, (
         ROUND(
             CAST(
                 (
                     SELECT SUM(quantityOrdered)
                     FROM orderdetails o
                     WHERE
-                        o.productCode = p.productCode
+                        o.productCode = productCode
                 ) AS REAL
-            ) / p.quantityInStock, 2
+            ) / quantityInStock, 2
         )
     ) AS lowStock
-FROM products p
+FROM products
 ORDER BY lowStock DESC
 LIMIT 10;
