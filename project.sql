@@ -172,12 +172,29 @@ WITH
         LIMIT 10
     )
 SELECT p.*, l.lowStock, pp.productPerformance
-FROM products p
-LEFT JOIN lowStock l ON p.productCode = l.productCode
-LEFT JOIN productPerformance pp ON p.productCode = pp.productCode
+FROM
+    products p
+    LEFT JOIN lowStock l ON p.productCode = l.productCode
+    LEFT JOIN productPerformance pp ON p.productCode = pp.productCode
 WHERE
     p.productCode IN (
-        SELECT productCode FROM lowStock
+        SELECT productCode
+        FROM lowStock
         UNION
-        SELECT productCode FROM productPerformance
-    )
+        SELECT productCode
+        FROM productPerformance
+    );
+
+-- Profit per Customer
+
+SELECT o.customerNumber, SUM(
+        od.quantityOrdered * (od.priceEach - p.buyPrice)
+    ) AS profit
+FROM
+    orders o
+    JOIN orderdetails od ON o.orderNumber = od.orderNumber
+    JOIN products p ON p.productCode = od.productCode
+GROUP BY
+    o.customerNumber
+ORDER BY profit DESC;
+
