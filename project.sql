@@ -218,6 +218,26 @@ FROM profits p
     JOIN customers c ON c.customerNumber = p.customerNumber
 LIMIT 5;
 
+-- Top 5 Least Engaged Customers
+
+WITH
+    profits AS (
+        SELECT o.customerNumber, SUM(
+                od.quantityOrdered * (od.priceEach - p.buyPrice)
+            ) AS profit
+        FROM
+            orders o
+            JOIN orderdetails od ON o.orderNumber = od.orderNumber
+            JOIN products p ON p.productCode = od.productCode
+        GROUP BY
+            o.customerNumber
+        ORDER BY profit
+    )
+SELECT c.contactLastName, c.contactFirstName, c.city, c.country, p.profit
+FROM profits p
+    JOIN customers c ON c.customerNumber = p.customerNumber
+LIMIT 5;
+
 -- Customer Lifetime Value (AVG Profit)
 
 WITH
