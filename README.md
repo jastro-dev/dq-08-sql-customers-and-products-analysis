@@ -3,7 +3,9 @@
 Our analysis targets the following three questions utilizing `stores.db` as our database.
 
 Question 1: Which products should we order more of or less of?
+
 Question 2: How should we tailor marketing and communication strategies to customer behaviors?
+
 Question 3: How much can we spend on acquiring new customers?
 
 We identify low-stock and high-performing products, segmenting them into respective tables to highlight optimal products for maximizing revenue. Vintage Cars, Classic Cars, and Motorcycles stand out as top performers with low stock, signaling a key area of focus for the business.
